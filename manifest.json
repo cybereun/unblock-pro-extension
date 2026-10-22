@@ -1,0 +1,59 @@
+{
+  "manifest_version": 3,
+  "name": "Unblock Pro - 우클릭 및 이미지/텍스트 완벽 해제",
+  "version": "1.0.0",
+  "description": "우클릭 방지, 텍스트 드래그 차단, 이미지 저장 방지막을 완벽히 무력화합니다.",
+  "permissions": [
+    "storage",
+    "activeTab",
+    "scripting"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "action": {
+    "default_title": "클릭하여 우클릭 해제 ON/OFF 전환",
+    "default_icon": {
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "128": "icons/icon128.png"
+  },
+  "commands": {
+    "_execute_action": {
+      "suggested_key": {
+        "default": "Alt+R",
+        "mac": "Alt+R"
+      },
+      "description": "우클릭 해제 토글"
+    }
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "content_isolated.js"
+      ],
+      "run_at": "document_start",
+      "all_frames": true,
+      "match_about_blank": true
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "inject_main.js",
+        "unblock.css"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    }
+  ]
+}
