@@ -1,8 +1,11 @@
 // inject_main.js
 (function() {
   const inlineProps = ['oncontextmenu', 'onselectstart', 'ondragstart', 'oncopy', 'oncut', 'onmousedown'];
+  let isInjectActive = true;
 
   function clearInlineHandlers(root = document) {
+    if (!isInjectActive) return;
+
     inlineProps.forEach(prop => {
       window[prop] = null;
       if (root[prop]) root[prop] = null;
@@ -10,7 +13,6 @@
       if (root.documentElement && root.documentElement[prop]) root.documentElement[prop] = null;
     });
 
-    // 이미지 및 주요 컨테이너에 직접 걸린 인라인 속성 제거
     const elements = root.querySelectorAll('img, div, p, span, article, section, a');
     elements.forEach(el => {
       inlineProps.forEach(prop => {
@@ -22,13 +24,43 @@
     });
   }
 
-  // 초기 실행 및 동적 로딩(무한 스크롤 등) 대응을 위한 주기적 클리닝
-  clearInlineHandlers();
-  window.addEventListener('DOMContentLoaded', () => clearInlineHandlers());
-
-  // MutationObserver로 새로 추가되는 이미지나 텍스트 블록의 우클릭 방지 속성 자동 제거
+  // MutationObserver 인스턴스 생성
   const observer = new MutationObserver(() => {
-    clearInlineHandlers();
+    if (isInjectActive) {
+      clearInlineHandlers();
+    }
   });
-  observer.observe(document.documentElement, { childList: true, subtree: true });
+
+  function startObservation() {
+    isInjectActive = true;
+    clearInlineHandlers();
+    if (document.documentElement) {
+      observer.observe(document.documentElement, { childList: true, subtree: true });
+    }
+  }
+
+  function stopObservation() {
+    isInjectActive = false;
+    observer.disconnect();
+  }
+
+  // Isolated World (content_isolated.js) 와 통신하여 실시간 ON/OFF 동기화
+  window.addEventListener('message', (event) => {
+    if (!event.data || event.data.type !== 'UNBLOCK_PRO_TOGGLE') return;
+
+    if (event.data.isEnabled) {
+      startObservation();
+    } else {
+      stopObservation();
+    }
+  });
+
+  // 초기 실행
+  startObservation();
+  window.addEventListener('DOMContentLoaded', () => {
+    if (isInjectActive) clearInlineHandlers();
+  });
+
+  // Isolated World에 스크립트 준비 완료 알림
+  window.postMessage({ type: 'UNBLOCK_PRO_READY' }, '*');
 })();

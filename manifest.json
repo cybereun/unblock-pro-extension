@@ -1,18 +1,16 @@
 {
   "manifest_version": 3,
-  "name": "Unblock Pro - 우클릭 및 이미지/텍스트 완벽 해제",
-  "version": "1.0.0",
-  "description": "우클릭 방지, 텍스트 드래그 차단, 이미지 저장 방지막을 완벽히 무력화합니다.",
+  "name": "Unblock Pro - 웹 접근성 및 우클릭 복원",
+  "version": "1.1.0",
+  "description": "브라우저 기본 우클릭 메뉴와 텍스트 선택 기능을 복원하여 웹 브라우징 접근성과 편의성을 높여줍니다.",
   "permissions": [
-    "storage",
-    "activeTab",
-    "scripting"
+    "storage"
   ],
   "host_permissions": [
     "<all_urls>"
   ],
   "action": {
-    "default_title": "클릭하여 우클릭 해제 ON/OFF 전환",
+    "default_title": "클릭하여 우클릭 복원 기능 ON/OFF 전환",
     "default_icon": {
       "128": "icons/icon128.png"
     }
@@ -26,7 +24,7 @@
         "default": "Alt+R",
         "mac": "Alt+R"
       },
-      "description": "우클릭 해제 토글"
+      "description": "우클릭 복원 기능 토글"
     }
   },
   "background": {

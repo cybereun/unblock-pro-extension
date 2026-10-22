@@ -1,11 +1,11 @@
-# Unblock Pro (우클릭 및 이미지/텍스트 복사 완벽 해제)
+# Unblock Pro (웹 접근성 및 우클릭 복원 확장 프로그램)
 
 <p align="center">
-  <img src="icons/icon128.png" alt="Unblock Pro Icon" width="96" height="96" />
+  <img src="https://raw.githubusercontent.com/cybereun/unblock-pro-extension/main/icons/icon128.png" alt="Unblock Pro Icon" width="96" height="96" />
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-1.0.0-emerald.svg?style=for-the-badge" alt="Version 1.0.0" />
+  <img src="https://img.shields.io/badge/version-1.1.0-emerald.svg?style=for-the-badge" alt="Version 1.1.0" />
   <img src="https://img.shields.io/badge/Manifest-V3-blue.svg?style=for-the-badge" alt="Manifest V3" />
   <img src="https://img.shields.io/badge/Chrome-Extension-4285F4.svg?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Chrome Extension" />
   <img src="https://img.shields.io/badge/license-MIT-green.svg?style=for-the-badge" alt="License MIT" />
@@ -21,9 +21,9 @@
 
 ---
 
-**Unblock Pro**는 네이버 블로그, 티스토리, 노션, 뉴스 사이트 등 상용 웹사이트의 정교한 우클릭 방지, 텍스트 드래그 차단, 투명 오버레이를 통한 이미지 저장 방지막을 완벽하게 무력화하는 실전형 크롬 확장 프로그램(Manifest V3)입니다.
+**Unblock Pro**는 웹 서핑 중 비활성화된 브라우저의 기본 기능(마우스 우클릭 메뉴, 텍스트 선택 및 드래그)을 정상적으로 복원하여 **웹 브라우징의 접근성과 편의성을 높여주는** 오픈소스 구글 크롬 확장 프로그램(Manifest V3)입니다.
 
-단순한 Content Script 단일 방식이 아닌, **Isolated World와 Main World를 동시 제어하는 듀얼 컨텍스트 아키텍처**로 설계되어 웹사이트 고유 방어 코드를 원천 차단합니다.
+불필요한 권한 요청을 일체 배제(최소 권한 원칙 준수)하였으며, **Isolated World와 Main World를 유기적으로 동기화하는 듀얼 아키텍처**를 채택하여 구글 독스나 피그마 같은 복합 웹 애플리케이션에서도 오동작 없이 안전하게 사용할 수 있습니다.
 
 ---
 
@@ -31,27 +31,25 @@
 
 - **개발자**: `cybereun`
 - **GitHub**: [@cybereun](https://github.com/cybereun)
-- **문의 및 피드백**: GitHub Issues / Pull Requests
+- **문의 및 피드백**: [GitHub Issues](https://github.com/cybereun/unblock-pro-extension/issues)
 
 ---
 
 ## ✨ 핵심 특징 (Features)
 
-1. **듀얼 컨텍스트(Isolated World + Main World) 동시 제어**
-   - **Isolated World (`content_isolated.js`)**: 브라우저 최상위 캡처링 단계(`capture: true`)에서 사이트 이벤트 리스너로 전파되기 전 `stopImmediatePropagation()`으로 차단.
-   - **Main World (`inject_main.js`)**: 웹페이지 실제 DOM에 직접 침투하여 `document.oncontextmenu = return false`와 같은 인라인 핸들러를 제거하고 `MutationObserver`로 동적 요소까지 상시 정화.
+1. **최소 권한 원칙(Principle of Least Privilege) 준수**
+   - 불필요한 `activeTab`, `scripting` 권한을 요청하지 않고 필수 설정 저장(`storage`) 권한만을 사용하여 보안과 프라이버시를 지킵니다.
 
-2. **투명 방어막(Overlay) 무력화 및 포인터 이벤트 제어 (`unblock.css`)**
-   - 이미지 위를 덮고 있는 투명 보호 `div`나 `::after` 가상 요소를 마우스가 통과하도록 `pointer-events`를 자동 조정.
-   - 이미지 우클릭 시 일반 컨텍스트 메뉴가 아닌 **"이미지를 다른 이름으로 저장..."** 및 **"이미지 복사"** 메뉴 정상 출력.
+2. **완전한 실시간 토글 (Isolated World + Main World 양방향 동기화)**
+   - 툴바 아이콘 클릭 또는 단축키(`Alt + R`) 입력 시 페이지 새로고침 없이 즉시 ON/OFF 전환됩니다.
+   - 기능 비활성화(OFF) 시 Main World의 `MutationObserver` 및 DOM 감시 작업이 즉시 완전 중단되어, 웹 애플리케이션 고유의 컨텍스트 메뉴와의 충돌을 원천 차단합니다.
 
-3. **원클릭 실시간 토글 & 단축키 지원**
-   - 툴바 아이콘 클릭 또는 단축키(`Alt + R`) 입력으로 ON/OFF 즉시 전환 (새로고침 불필요).
-   - Figma, Google Docs 등 웹 툴 사용 시 간섭 없이 손쉽게 비활성화 가능.
-   - 뱃지 텍스트(초록색 `ON` / 회색 `OFF`)로 현재 작동 상태 직관적 확인.
+3. **기본 컨텍스트 메뉴 및 텍스트 선택 복원**
+   - 브라우저 캡처링 단계(`capture: true`)에서 스크립트 간섭을 해소하여 기본 컨텍스트 메뉴를 복원합니다.
+   - 투명 오버레이로 덮여 선택하기 어렵던 미디어 요소에 `pointer-events: auto`를 적용하여 정상적인 상호작용을 지원합니다.
 
-4. **Iframe 침투 지원**
-   - `all_frames: true` 및 `match_about_blank: true` 지원으로 네이버 블로그/카페처럼 iframe 내부에 본문이 위치한 사이트 완벽 지원.
+4. **Iframe 중첩 문서 지원**
+   - `all_frames: true` 설정을 통해 중첩된 프레임 구조의 웹 문서에서도 끊김 없이 일관된 브라우징 편의를 제공합니다.
 
 ---
 
@@ -59,12 +57,13 @@
 
 ### 방법 1. 릴리즈 ZIP 파일 다운로드 설치 (권장)
 
-1. [GitHub Releases](https://github.com/cybereun/unblock-pro-extension/releases) 페이지에서 최신 버전(`unblock-pro-v1.0.0.zip`)을 다운로드합니다.
+1. [GitHub Releases](https://github.com/cybereun/unblock-pro-extension/releases) 페이지에서 최신 버전(`unblock-pro-v1.1.0.zip`)을 다운로드합니다.
 2. 다운로드한 ZIP 파일의 압축을 원하는 폴더에 풉니다.
 3. 크롬 브라우저를 열고 주소창에 `chrome://extensions`를 입력하여 이동합니다.
 4. 우측 상단의 **개발자 모드(Developer mode)** 스위치를 켭니다.
 5. 좌측 상단의 **압축해제된 확장 프로그램을 로드합니다(Load unpacked)** 버튼을 클릭합니다.
 6. 압축을 해제한 폴더(`unblock-pro-extension`)를 선택하면 설치가 완료됩니다!
+*(기존에 이미 설치하셨다면 `chrome://extensions`에서 해당 카드의 🔄 새로고침 버튼만 누르시면 바로 v1.1.0으로 갱신됩니다.)*
 
 ### 방법 2. Git 저장소 클론
 
@@ -79,7 +78,7 @@ git clone https://github.com/cybereun/unblock-pro-extension.git
 
 | 기능 | Windows / Linux | macOS |
 | :--- | :--- | :--- |
-| **우클릭 해제 ON / OFF 토글** | `Alt + R` | `Alt + R` |
+| **우클릭 복원 기능 ON / OFF 토글** | `Alt + R` | `Alt + R` |
 
 ---
 
@@ -87,14 +86,17 @@ git clone https://github.com/cybereun/unblock-pro-extension.git
 
 ```
 unblock-pro-extension/
-├── manifest.json        # MV3 확장 프로그램 매니페스트
+├── manifest.json        # MV3 확장 프로그램 매니페스트 (최소 권한 준수)
 ├── background.js        # Background Service Worker (토글 및 뱃지 제어)
-├── content_isolated.js  # Isolated World 스크립트 (이벤트 캡처링 차단)
-├── inject_main.js       # Main World 스크립트 (인라인 방어코드 무력화)
-├── unblock.css          # CSS 레벨 텍스트 드래그 허용 및 오버레이 통과
+├── content_isolated.js  # Isolated World 스크립트 (이벤트 제어 및 리소스 주입)
+├── inject_main.js       # Main World 스크립트 (DOM 정상화 및 실시간 감시 제어)
+├── unblock.css          # CSS 레벨 선택 허용 및 오버레이 통과 스타일
 ├── icons/
 │   └── icon128.png      # 128x128 전용 아이콘
-└── README.md            # 안내 문서
+├── README.md            # 한국어 문서
+├── README.en.md         # 영어 문서
+├── README.ja.md         # 일본어 문서
+└── README.zh.md         # 简体中文 문서
 ```
 
 ---

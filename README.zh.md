@@ -1,11 +1,11 @@
-# Unblock Pro (解除网页右键限制、图片与文本复制保护)
+# Unblock Pro (网页无障碍辅助与右键功能恢复扩展)
 
 <p align="center">
-  <img src="icons/icon128.png" alt="Unblock Pro Icon" width="96" height="96" />
+  <img src="https://raw.githubusercontent.com/cybereun/unblock-pro-extension/main/icons/icon128.png" alt="Unblock Pro Icon" width="96" height="96" />
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-1.0.0-emerald.svg?style=for-the-badge" alt="Version 1.0.0" />
+  <img src="https://img.shields.io/badge/version-1.1.0-emerald.svg?style=for-the-badge" alt="Version 1.1.0" />
   <img src="https://img.shields.io/badge/Manifest-V3-blue.svg?style=for-the-badge" alt="Manifest V3" />
   <img src="https://img.shields.io/badge/Chrome-Extension-4285F4.svg?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Chrome Extension" />
   <img src="https://img.shields.io/badge/license-MIT-green.svg?style=for-the-badge" alt="License MIT" />
@@ -21,9 +21,9 @@
 
 ---
 
-**Unblock Pro** 是一款专为实战环境设计的 Chrome 扩展程序（Manifest V3），能够彻底瓦解各大博客平台（Naver Blog、Tistory 等）、Notion、新闻门户以及各种受保护网页的多层复制防御机制（禁止右键、禁止文本划选拖拽、透明遮罩层防图片下载等）。
+**Unblock Pro** 是一款开源的 Google Chrome 浏览器扩展（Manifest V3），旨在恢复网页上被屏蔽的原生鼠标右键菜单与文本划选功能，显著**提升网页浏览的无障碍辅助体验与工作效率**。
 
-不同于传统的单一 Content Script，本项目采用**隔离环境 (Isolated World) 与网页主环境 (Main World) 双上下文协同控制**架构，从底层粉碎网页的反右键逻辑。
+本项目严格遵循 Google 的**最小权限原则 (Principle of Least Privilege)**，彻底杜绝多余权限，并采用 **Isolated World（隔离环境）与 Main World（网页环境）同步通信的双上下文架构**，在 Google Docs、Figma 等复杂 Web 应用中也能安全无误地运行。
 
 ---
 
@@ -37,21 +37,19 @@
 
 ## ✨ 核心特性 (Features)
 
-1. **双执行环境（Isolated World + Main World）协同控制**
-   - **Isolated World (`content_isolated.js`)**: 在 `document_start` 最早阶段以事件捕获模式（`capture: true`）介入，在网页事件监听器执行前通过 `stopImmediatePropagation()` 强制截断事件冒泡与传播。
-   - **Main World (`inject_main.js`)**: 直接注入网页主执行上下文，将 `document.oncontextmenu = return false` 等内联属性重置为 `null`，并通过 `MutationObserver` 对无限滚动和动态加载元素保持持续监听净化。
+1. **严格遵循最小权限原则**
+   - 彻底移除了不必要的 `activeTab` 与 `scripting` 权限，仅保留基础存储权限（`storage`），最大程度保障用户数据与隐私安全。
 
-2. **穿透透明遮罩层与鼠标事件重定向 (`unblock.css`)**
-   - 自动使覆盖在图片上的透明遮罩层（`.protect_img`、`.dimmed`、`::after` 伪元素等）穿透鼠标点击事件（`pointer-events: none`）。
-   - 为 `img`、`canvas`、`svg` 等媒体元素强制赋予 `pointer-events: auto !important`，确保右键精准弹出**“图片另存为...”**与**“复制图片”**菜单。
+2. **双环境双向实时同步切换**
+   - 点击工具栏图标或按下快捷键（`Alt + R`）即可无缝切换开启/关闭，无需刷新页面。
+   - 关闭（OFF）时，Main World 的 `MutationObserver` 监听器将彻底断开连接（disconnect），杜绝与复杂 Web 应用原生上下文菜单的任何冲突。
 
-3. **一键实时切换与快捷键支持**
-   - 无需刷新网页，点击工具栏插件图标或按下快捷键（`Alt + R`）即可即时开启/关闭解除功能。
-   - 避免影响 Figma、Google Docs 等依赖自定义右键菜单的复杂 Web 应用程序。
-   - 工具栏徽标（绿色 `ON` / 灰色 `OFF`）直观呈现运行状态。
+3. **恢复原生上下文菜单与自由划选**
+   - 在事件捕获最先阶段（`capture: true`）消除脚本干扰，还原本生右键菜单与文本选择。
+   - 穿透透明遮罩层（`pointer-events: auto`），保障媒体元素的可访问性与正常交互。
 
-4. **深入渗透嵌套 iframe**
-   - 启用 `all_frames: true` 与 `match_about_blank: true`，完美兼容将正文嵌套在 iframe 内的各大门户与博客系统。
+4. **完整支持嵌套 iframe**
+   - 启用 `all_frames: true`，在含有嵌套框架的门户和内容平台中提供无缝统一的操作体验。
 
 ---
 
@@ -59,12 +57,12 @@
 
 ### 方式 1. 下载 Release ZIP 压缩包（推荐）
 
-1. 前往 [GitHub Releases](https://github.com/cybereun/unblock-pro-extension/releases) 页面，下载最新的 `unblock-pro-v1.0.0.zip`。
-2. 解压下载的 ZIP 文件至任意文件夹。
+1. 前往 [GitHub Releases](https://github.com/cybereun/unblock-pro-extension/releases) 页面，下载最新的 `unblock-pro-v1.1.0.zip`。
+2. 解压下载的 ZIP 文件至目标文件夹。
 3. 打开 Chrome 浏览器，在地址栏输入 `chrome://extensions` 并回车。
 4. 开启右上角的**开发者模式 (Developer mode)**。
-5. 点击左上角的**加载已解压的扩展程序 (Load unpacked)** 按钮。
-6. 选择解压出的 `unblock-pro-extension` 目录即可完成安装。
+5. 点击左上角的**加载已解压的扩展程序 (Load unpacked)** 按钮并选择解压文件夹。
+*(如果您此前已安装过该扩展，只需在 `chrome://extensions` 页面点击该扩展卡片上的 🔄 重新加载按钮，即可立即升级为 v1.1.0。)*
 
 ### 方式 2. 通过 Git Clone 安装
 
@@ -79,7 +77,7 @@ git clone https://github.com/cybereun/unblock-pro-extension.git
 
 | 功能 | Windows / Linux | macOS |
 | :--- | :--- | :--- |
-| **切换解除状态 ON / OFF** | `Alt + R` | `Alt + R` |
+| **切换恢复功能 ON / OFF** | `Alt + R` | `Alt + R` |
 
 ---
 
@@ -87,11 +85,11 @@ git clone https://github.com/cybereun/unblock-pro-extension.git
 
 ```
 unblock-pro-extension/
-├── manifest.json        # MV3 扩展清单文件
+├── manifest.json        # MV3 扩展清单文件（严格遵循最小权限）
 ├── background.js        # Background Service Worker（状态控制与徽标更新）
-├── content_isolated.js  # 隔离环境脚本（事件捕获与资源注入）
-├── inject_main.js       # 主上下文脚本（内联事件重置与动态监听）
-├── unblock.css          # CSS 样式穿透（强制划选与遮罩穿透）
+├── content_isolated.js  # 隔离环境脚本（事件控制与资源注入）
+├── inject_main.js       # 主上下文脚本（DOM正常化与实时观察器控制）
+├── unblock.css          # CSS 样式穿透（选择许可与遮罩穿透）
 ├── icons/
 │   └── icon128.png      # 128x128 专用图标
 ├── README.md            # 韩语说明文档

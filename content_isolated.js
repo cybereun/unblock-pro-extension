@@ -6,7 +6,7 @@ const TARGET_EVENTS = [
   'selectstart', 'dragstart', 'mousedown', 'mouseup'
 ];
 
-// 1. 캡처링 단계에서 사이트의 이벤트 리스너로 전파되는 것을 강제 차단
+// 1. 캡처링 단계에서 사이트의 이벤트 리스너로 전파되는 것을 차단
 function interceptEvent(e) {
   if (!isUnblockActive) return;
   e.stopPropagation();
@@ -35,19 +35,34 @@ function applyUnblockResources() {
     script.id = 'unblock-pro-main-js';
     script.src = chrome.runtime.getURL('inject_main.js');
     (document.head || document.documentElement).appendChild(script);
+  } else {
+    // 이미 스크립트가 주입되어 있는 경우 토글 신호 전달
+    window.postMessage({ type: 'UNBLOCK_PRO_TOGGLE', isEnabled: true }, '*');
   }
 }
 
 function removeUnblockResources() {
   const css = document.getElementById('unblock-pro-css');
   if (css) css.remove();
+
+  // Main World 스크립트에 비활성화(Observer 중지) 신호 전달
+  window.postMessage({ type: 'UNBLOCK_PRO_TOGGLE', isEnabled: false }, '*');
 }
+
+// Main World 스크립트 준비 완료 시 현재 상태 동기화
+window.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'UNBLOCK_PRO_READY') {
+    window.postMessage({ type: 'UNBLOCK_PRO_TOGGLE', isEnabled: isUnblockActive }, '*');
+  }
+});
 
 // 3. 초기 상태 로드 및 실행
 chrome.storage.local.get({ isEnabled: true }, (data) => {
   isUnblockActive = data.isEnabled;
   if (isUnblockActive) {
     applyUnblockResources();
+  } else {
+    removeUnblockResources();
   }
 });
 
@@ -57,6 +72,7 @@ chrome.runtime.onMessage.addListener((message) => {
     isUnblockActive = message.isEnabled;
     if (isUnblockActive) {
       applyUnblockResources();
+      window.postMessage({ type: 'UNBLOCK_PRO_TOGGLE', isEnabled: true }, '*');
     } else {
       removeUnblockResources();
     }
